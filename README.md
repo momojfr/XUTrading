@@ -13,6 +13,12 @@ XAUUSD (Gold) trading strategy, based on 248 real trades logged over
 - Computes maximum drawdown
 - Visualizes equity curve (overall and broken down by year)
 
+## Total Payouts
+
+![Total Payouts](total-payouts-2026-01-23.png)
+
+## What this project does
+
 ## Key findings
 
 | Metric | Value |
