@@ -82,19 +82,7 @@ that the analyzed performance translated into real, verified income.
 ![Payout May 2026](payout-received-2026-05-08.png)
 ![Payout Jul 2026](payout-received-2026-07-12.png)
 ![Payout Jul 2026](payout-received-2026-07-27.png)  price data (rather than relying on manually logged outcomes)
-- Investigate the 2024 performance dip (rule violations vs. market
-  conditions)
-- Compare performance across trading sessions (Asia / London / New York)
 
-## Proof of Results
 
-Payouts received from a prop trading firm based on this strategy, showing
-that the analyzed performance translated into real, verified income.
 
-![Payout Dec 2025](payout-received-2025-12-15.png)
-![Payout Jan 2026](payout-received-2026-01-23.png)
-![Payout Feb 2026](payout-received-2026-02-08.png)
-![Payout May 2026](payout-received-2026-05-08.png)
-![Payout Jul 2026](payout-received-2026-07-12.png)
-![Payout Jul 2026](payout-received-2026-07-27.png)
 
