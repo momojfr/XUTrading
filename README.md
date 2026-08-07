@@ -81,7 +81,7 @@ that the analyzed performance translated into real, verified income.
 ![Payout Feb 2026](payout-received-2026-02-08.png)
 ![Payout May 2026](payout-received-2026-05-08.png)
 ![Payout Jul 2026](payout-received-2026-07-12.png)
-![Payout Jul 2026](payout-received-2026-07-27.png)  price data (rather than relying on manually logged outcomes)
+![Payout Jul 2026](payout-received-2026-07-27.png)  
 
 
 
