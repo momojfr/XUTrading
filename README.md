@@ -72,10 +72,10 @@ analysis to avoid skewing performance metrics.
 Payouts received from a prop trading firm based on this strategy, showing
 that the analyzed performance translated into real, verified income.
 
-![Payout Dec 2025](assets/payout-received-2025-12-15.png)
-![Payout Jan 2026](assets/payout-received-2026-01-23.png)
-![Payout Feb 2026](assets/payout-received-2026-02-08.png)
-![Payout May 2026](assets/payout-received-2026-05-08.png)
-![Payout Jul 2026](assets/payout-received-2026-07-12.png)
-![Payout Jul 2026](assets/payout-received-2026-07-27.png)
+![Payout Dec 2025](payout-received-2025-12-15.png)
+![Payout Jan 2026](payout-received-2026-01-23.png)
+![Payout Feb 2026](payout-received-2026-02-08.png)
+![Payout May 2026](payout-received-2026-05-08.png)
+![Payout Jul 2026](payout-received-2026-07-12.png)
+![Payout Jul 2026](payout-received-2026-07-27.png)
 
