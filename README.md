@@ -49,12 +49,7 @@ XAUUSD (Gold) trading strategy, based on 248 real trades logged over
 └── README.md
 ```
 
-## Running it yourself
 
-```bash
-pip install -r requirements.txt
-python analysis.py
-```
 
 ## Notes on data source
 
