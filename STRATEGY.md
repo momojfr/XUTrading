@@ -1,215 +1,208 @@
-# FX Relative-Strength Swing Rotation — Regelwerk
+# Gold Fib-OB Swing Continuation — Regelwerk
 
 > Ziel: Eine Swing-Strategie, bei der **jede** Entscheidung eine Zahl aus dem
-> Chart ist. Keine Chartformen, kein Augenmaß, kein "sieht aus wie". Wenn zwei
-> Leute dasselbe Regelwerk mit denselben Daten anwenden, kommen sie zu
-> **identischen** Trades. Das ist die Definition von idiotensicher.
+> Chart ist. Kein Augenmaß, kein "sieht aus wie", kein diskretionäres Fib.
+> Zwei Leute mit denselben Daten kommen zu **identischen** Trades.
 >
-> Diese Datei ist die einzige Wahrheit. Wenn eine Situation hier nicht steht,
+> Diese Datei ist die einzige Wahrheit. Steht eine Situation hier nicht drin,
 > wird **nicht** gehandelt.
 
 ---
 
 ## 0. Kernidee (in einem Satz)
 
-Währungen bewegen sich gegeneinander in Trends. Wir messen jede Woche rein
-rechnerisch, welche der 8 Hauptwährungen am **stärksten** und welche am
-**schwächsten** ist, und handeln genau das Paar zwischen diesen beiden — long
-die starke, short die schwache. Fertig.
+Nach einer starken Impulsbewegung zieht sich der Kurs zurück. Wenn das
+**50 %-Retracement (Fib 0.5)** genau in einem **frischen Order Block** liegt,
+steigen wir **in Richtung des Impulses** ein (Continuation) und lassen einen
+Teil als **Runner** bis zur nächsten Liquidität laufen.
 
 ---
 
-## 1. Universum (fest, wird nie geändert)
+## 1. Markt & Zeitrahmen (fest)
 
-**8 Währungen:** USD, EUR, GBP, JPY, AUD, NZD, CAD, CHF
+| Punkt              | Festlegung                                              |
+|--------------------|---------------------------------------------------------|
+| Instrument         | **XAUUSD / Gold** (Basis-Test). Danach übertragbar.     |
+| Arbeits-Timeframe  | **4H** — Impuls, Fib, OB, Entry, EQH/EQL alles auf 4H   |
+| Stil               | **Swing** — Trades laufen typischerweise Tage           |
+| Entscheidungstakt  | bei jedem **abgeschlossenen 4H-Close**                   |
 
-**7 Mess-Paare** (das sind die einzigen Charts, die du zum Ranken brauchst):
-
-| # | Paar    | Misst die Stärke von | Vorzeichen der % -Änderung |
-|---|---------|----------------------|-----------------------------|
-| 1 | EURUSD  | EUR                  | **+** (unverändert)         |
-| 2 | GBPUSD  | GBP                  | **+**                       |
-| 3 | AUDUSD  | AUD                  | **+**                       |
-| 4 | NZDUSD  | NZD                  | **+**                       |
-| 5 | USDJPY  | JPY                  | **−** (umkehren)            |
-| 6 | USDCHF  | CHF                  | **−**                       |
-| 7 | USDCAD  | CAD                  | **−**                       |
-
-> Warum das Vorzeichen? Bei EURUSD bedeutet "+2%", dass EUR **stärker** wurde.
-> Bei USDJPY bedeutet "+2%", dass USD stärker und damit JPY **schwächer** wurde
-> — deshalb drehen wir das Vorzeichen um, damit "+" immer "diese Währung wird
-> stärker" heißt.
-
-Die **8. Währung ist USD** und wird nicht direkt gemessen, sondern berechnet
-(siehe 3.2).
+Kein zusätzlicher Trendfilter, kein EMA. Bewusst minimal.
 
 ---
 
-## 2. Zeitrahmen & Rhythmus (fest)
+## 2. Bausteine — alle objektiv definiert
 
-| Zweck                     | Timeframe | Wann                                             |
-|---------------------------|-----------|--------------------------------------------------|
-| Stärke messen & ranken    | **Daily** | 1× pro Woche, am **Montag beim Wochenopen**      |
-| Trendfilter               | **Daily** | gleicher Moment                                  |
-| Einstieg ausführen        | **4H**    | Open der **ersten 4H-Kerze** der Handelswoche    |
-| Trade-Management          | —         | wieder am nächsten Montag                        |
+### 2.1 Swing-Punkt (5-Kerzen-Fraktal)
 
-- **Entscheidungszeitpunkt = einmal pro Woche, Montag beim Open.** Nicht öfter.
-  Kein Reinschauen unter der Woche außer zum Prüfen von Stop/Target.
-- Zum Ranken werden immer die **letzten abgeschlossenen** Daily-Kerzen benutzt
-  (also der Stand von Freitag-Close).
+- **Swing-Hoch (SH):** eine Kerze, deren **Hoch** höher ist als die Hochs der
+  **2 Kerzen links und 2 Kerzen rechts** davon.
+- **Swing-Tief (ST):** Spiegelbild (Tief tiefer als die 2 links und 2 rechts).
+
+> Ein Fraktal ist erst **bestätigt**, wenn die 2 Kerzen rechts geschlossen sind.
+> Vorher zählt es nicht. (Kein Vorgriff.)
+
+### 2.2 Impuls (das Fib-Fundament)
+
+Eine Bewegung zählt als **gültiger Impuls**, wenn **alle 3** Bedingungen erfüllt
+sind (Beispiel: Abwärts-Impuls von SH zu ST):
+
+1. **Größe:** Distanz `SH_Hoch − ST_Tief` ≥ **2,0 × ATR(14)** (ATR auf 4H).
+2. **Tempo:** vom SH bis zum ST liegen **≤ 10 Kerzen**.
+3. **Struktur-Bruch (BOS):** das ST bricht **unter** das vorherige bestätigte
+   Swing-Tief (macht ein neues tieferes Tief).
+
+Aufwärts-Impuls = Spiegelbild (ST → SH, ≥ 2 ATR, ≤ 10 Kerzen, bricht das
+vorherige Swing-Hoch).
+
+> Gibt es mehrere gültige Impulse gleichzeitig → nimm den **jüngsten**
+> (zuletzt abgeschlossenen). Nie einen älteren "nachträglich" auswählen.
+
+### 2.3 Fibonacci
+
+Direkt über den gültigen Impuls gelegt:
+
+- Abwärts-Impuls: **0 = SH_Hoch**, **1 = ST_Tief**.
+- Aufwärts-Impuls: **0 = ST_Tief**, **1 = SH_Hoch**.
+- **0.5 = genau die Mitte:** `(0-Level + 1-Level) / 2`.
+
+### 2.4 Order Block (OB)
+
+- **Bearisher OB** (für Shorts, Abwärts-Impuls): die **letzte Kerze mit
+  bullischem Close** (Close > Open) **direkt vor** dem Start des Abwärts-Impuls.
+- **Bullischer OB** (für Longs): die **letzte Kerze mit bärischem Close**
+  (Close < Open) direkt vor dem Start des Aufwärts-Impuls.
+- **Zone = die ganze Kerze: von ihrem Hoch bis zu ihrem Tief** (High–Low).
+
+### 2.5 "Frisch" (unmitigiert)
+
+Der OB ist **frisch**, wenn seit seiner Entstehung **keine** Kerze in die Zone
+(High–Low) hineingelaufen ist — der aktuelle Retracement ist der **erste** Tap.
+War die Zone vorher schon einmal berührt → **verbraucht → kein Trade.**
+
+### 2.6 EQH/EQL (Liquidität)
+
+Die Level des Indikators **"EQH/EQL D.A.T"** (feste Einstellungen, damit
+reproduzierbar) definieren die Liquiditäts-Pools. Rolle hier: **Ziel für den
+Runner** (siehe §4).
 
 ---
 
-## 3. Der Stärke-Score (das objektive Herzstück)
+## 3. Einstieg (Trigger + Ausführung)
 
-### 3.1 Roh-Werte ablesen — 7 Zahlen
+### 3.1 Die Confluence-Bedingung (Ja/Nein)
 
-Lookback = **20 Handelstage** (≈ 1 Monat).
-
-Für jedes der 7 Mess-Paare den **20-Tage-Return** ablesen:
+**Der Trade ist nur gültig, wenn die 0.5 innerhalb der frischen OB-Zone liegt:**
 
 ```
-Return_20 = (Close_heute − Close_vor_20_Tagen) / Close_vor_20_Tagen × 100
+OB_Tief ≤ Fib-0.5-Preis ≤ OB_Hoch     UND     OB ist frisch (§2.5)
 ```
 
-In TradingView am einfachsten mit dem Indikator **ROC (Rate of Change),
-Länge = 20**, auf dem Daily. Der ROC-Wert auf der letzten abgeschlossenen
-Kerze (Freitag) ist die gesuchte Zahl.
+Ist das nicht der Fall → **kein Trade.**
 
-### 3.2 In Währungsstärke umrechnen — 8 Zahlen
+### 3.2 Entry, Stop, R
+
+- **Entry = Limit-Order an der näheren OB-Kante (proximal):**
+  - Short (Abwärts-Impuls, Kurs läuft von unten hoch): Limit am **OB-Tief**.
+  - Long (Aufwärts-Impuls, Kurs läuft von oben runter): Limit am **OB-Hoch**.
+- **Stop = hinter der fernen OB-Kante (distal) + Puffer 0,1 × ATR(14):**
+  - Short: Stop = **OB-Hoch + 0,1 × ATR**.
+  - Long: Stop = **OB-Tief − 0,1 × ATR**.
+- **R (Risiko-Einheit) = | Entry − Stop |.**
+- **Positionsgröße:** so, dass der Verlust bei Stop = **1 % des Kontos** ist.
+
+### 3.3 Gültigkeit der Limit-Order
+
+Die Order verfällt (nicht gehandelt), wenn **vor** dem Fill eines eintritt:
+
+1. Der Kurs macht ein **neues Extrem jenseits Fib 1.0** (Impuls verlängert sich,
+   Setup veraltet), **oder**
+2. **20 Kerzen** vergehen ohne Fill.
+
+---
+
+## 4. Ausstieg — Teilgewinn + Runner (2-teilig, objektiv)
+
+Position wird **50 / 50** geteilt.
+
+| Teil        | Regel                                                                 |
+|-------------|-----------------------------------------------------------------------|
+| **TP1 (50 %)** | bei **+2R** schließen. Gleichzeitig Stop des Rests auf **Break-Even** (Entry). |
+| **Runner (50 %)** | Ziel = **nächster gegenüberliegender EQH/EQL-Pool in Impuls-Richtung** (Short → nächster EQL darunter; Long → nächster EQH darüber). |
+
+**Runner-Fallback:** existiert kein solcher EQH/EQL-Pool → Runner-Ziel =
+**Fib-Extension −1.0** (Impuls um 100 % über sein Ende hinaus projiziert).
+
+**Gültigkeits-Check fürs Ziel:** das Runner-Ziel muss **≥ 3R** vom Entry
+entfernt sein. Ist die nächste Liquidität **< 3R** entfernt → **kein Runner**:
+dann wird die **volle** Position bei **+2R** geschlossen (degeneriert zu fix 2R).
+
+**Weitere feste Exit-Regeln:**
+- Wird der **Stop** vor TP1 getroffen → ganze Position −1R. Fertig.
+- Nach TP1 kann der Runner nur noch **+Runner-Gewinn** oder **Break-Even (0)**
+  ergeben — nie wieder Verlust.
+- **Zeit-Stop:** spätestens nach **10 Handelstagen** alles schließen.
+
+### 4.1 Ergebnis in R (fürs Journal)
+
+- Stop vor TP1: **−1R**
+- TP1 + Runner-BE: `0,5 × 2R + 0,5 × 0 =` **+1R**
+- TP1 + Runner-Ziel: `0,5 × 2R + 0,5 × (Runner-Distanz / R)`
+  - Beispiel Runner bei 4R: `1R + 0,5 × 4R =` **+3R**
+
+---
+
+## 5. Positions-Regeln
+
+- **Maximal 1 offener Trade** gleichzeitig. Erst wenn der geschlossen ist, zählt
+  das nächste Setup.
+- Kein Nachlegen, kein Pyramidisieren, kein Stop-Verschieben außer den
+  vorgeschriebenen BE-Move nach TP1.
+
+---
+
+## 6. Wöchentliche/tägliche Checkliste (alles muss JA sein)
 
 ```
-Stärke(EUR) = +ROC20(EURUSD)
-Stärke(GBP) = +ROC20(GBPUSD)
-Stärke(AUD) = +ROC20(AUDUSD)
-Stärke(NZD) = +ROC20(NZDUSD)
-Stärke(JPY) = −ROC20(USDJPY)
-Stärke(CHF) = −ROC20(USDCHF)
-Stärke(CAD) = −ROC20(USDCAD)
-Stärke(USD) = − (Mittelwert der 7 Werte oben)
+[ ] 1. Gültiger Impuls? (≥ 2×ATR  UND  ≤ 10 Kerzen  UND  BOS)          §2.2
+[ ] 2. Fib über den jüngsten Impuls gezogen, 0.5 berechnet?            §2.3
+[ ] 3. Frischer OB vorhanden (noch nie angetappt)?                     §2.4/2.5
+[ ] 4. Liegt die 0.5 INNERHALB der OB-Zone?                            §3.1
+[ ] 5. Runner-Ziel (EQH/EQL oder Fib-Ext) ≥ 3R entfernt?              §4
+[ ] 6. Gerade KEIN Trade offen?                                        §5
+
+Alle JA → Limit an OB-Kante, Stop hinter OB, 1 % Risiko, TP1 +2R (→BE), Runner.
+Ein NEIN → kein Trade. Punkt 5 NEIN → nur fix +2R (kein Runner).
 ```
 
-> USD ist stark, wenn alle anderen gegen USD schwach sind — deshalb der
-> negierte Durchschnitt.
+---
 
-### 3.3 Ranken
+## 7. Die einzigen einstellbaren Schrauben (später, einzeln testen)
 
-Sortiere die 8 Stärke-Werte:
+Zuerst **immer** mit diesen Defaults backtesten. Erst danach **eine** Schraube
+auf einmal ändern — nie mehrere gleichzeitig (sonst Kurven-Anpassung).
 
-- **Rang 1** = größter Wert = **stärkste** Währung
-- **Rang 8** = kleinster Wert = **schwächste** Währung
+| Schraube            | Default   | Alternativen        |
+|---------------------|-----------|---------------------|
+| Impuls-Größe        | 2,0 × ATR | 1,5× / 2,5×         |
+| Impuls-Tempo        | ≤ 10 Kerzen | ≤ 6 / ≤ 15        |
+| Fib-Entry-Level     | 0.5       | 0.618 / 0.705       |
+| Stop-Puffer         | 0,1 × ATR | 0,05× / 0,2×        |
+| TP1                 | 2R        | 1,5R / 3R           |
+| Teilgewinn-Anteil   | 50 %      | 33 % / 66 %         |
+| Runner-Mindestziel  | 3R        | 2,5R / 4R           |
 
-Das ist die komplette "Confluence". Eine Rangliste aus Zahlen. Nichts zu
-interpretieren.
+Alles andere bleibt fix.
 
 ---
 
-## 4. Paar-Auswahl (eindeutig)
+## 8. Was diese Strategie NICHT ist
 
-1. Nimm die **Rang-1-Währung** (stark) und die **Rang-8-Währung** (schwach).
-2. Bilde daraus das Standard-Paar (z. B. Rang-1 = EUR, Rang-8 = JPY → **EURJPY**).
-3. Richtung:
-   - Ist die **starke** Währung die **Basis** (erste im Symbol) → **BUY**.
-   - Ist die **starke** Währung der **Quote** (zweite im Symbol) → **SELL**.
+- Kein Signal-Dienst. Du liest die Zahlen selbst ab.
+- Kein diskretionäres Fib: der Impuls ist über §2.2 **eindeutig** bestimmt —
+  du "suchst" dir keinen Swing aus.
+- Kein "gutes Gefühl". Nur die Checkliste zählt.
 
-**Beispiel A:** stark = EUR, schwach = JPY → Symbol EURJPY, EUR ist Basis → **BUY EURJPY**.
-**Beispiel B:** stark = JPY, schwach = EUR → Symbol EURJPY, JPY ist Quote → **SELL EURJPY**.
-
-> Egal wie du es drehst: Du bist immer **long die starke** und **short die
-> schwache** Währung.
-
----
-
-## 5. Einstiegsfilter (ein einziger, Ja/Nein)
-
-Öffne das ausgewählte Paar im **Daily** mit einer **50-SMA**:
-
-- **BUY** nur erlaubt, wenn Daily-Close **> 50-SMA**.
-- **SELL** nur erlaubt, wenn Daily-Close **< 50-SMA**.
-
-Wenn der Filter der Ranking-Richtung **widerspricht** → **kein Trade diese
-Woche.** (Die Rangliste sagt "stark", aber der Preis ist noch nicht im Trend —
-wir warten.)
-
-**Ausführung:** Filter bestanden → Einstieg zum **Open der ersten 4H-Kerze**
-der Handelswoche. Marktorder. Kein Warten auf Pullbacks, keine Muster.
-
----
-
-## 6. Risiko & Ausstieg (feste Zahlen)
-
-| Größe            | Regel                                                      |
-|------------------|------------------------------------------------------------|
-| ATR              | **ATR(14)** auf dem **Daily**, abgelesen am Einstiegstag   |
-| Stop-Loss        | Einstieg **∓ 1,5 × ATR(14)** (unter Einstieg bei BUY, darüber bei SELL) |
-| Risiko pro Trade | **1 %** des Kontos                                          |
-| Positionsgröße   | (1 % × Konto) ÷ (Stop-Abstand in Pips × Pip-Wert)          |
-| Take-Profit      | **+2R** (fix 1:2 — R = Stop-Abstand)                       |
-
-**Ausstiegs-Reihenfolge (was zuerst passiert, zählt):**
-
-1. **Stop-Loss** getroffen → Trade zu, Ergebnis = **−1R**.
-2. **Take-Profit** getroffen → Trade zu, Ergebnis = **+2R**.
-3. **Rotations-Exit** (geprüft nur am nächsten Montag): Wenn weder Stop noch TP
-   getroffen wurde **und** das Paar nicht mehr Rang-1-gegen-Rang-8 ist —
-   konkret: die starke Währung ist aus **Rang 1–2** gefallen **oder** die
-   schwache Währung ist aus **Rang 7–8** gestiegen → Ausstieg zum **Open der
-   ersten 4H-Kerze**. Ergebnis = aktueller offener Gewinn/Verlust in R.
-4. **Zeit-Stop:** Spätestens nach **10 Handelstagen** schließen, egal was ist.
-
----
-
-## 7. Positions-Regeln
-
-- **Maximal 1 offener Trade** gleichzeitig. Ein Trade-Signal pro Woche.
-- **Kein** Nachkaufen, **kein** Pyramidisieren, **kein** Verschieben des Stops
-  (außer der Trade wird komplett geschlossen).
-- Ist bereits ein Trade offen → diese Woche **nicht** neu einsteigen, nur
-  managen (Punkt 6).
-
----
-
-## 8. Die wöchentliche Checkliste (alles muss JA sein)
-
-```
-[ ] 1. Ist es der feste Entscheidungszeitpunkt (Montag-Open)?
-[ ] 2. Stärke-Sheet ausgefüllt → eindeutige Rang-1 und Rang-8 (kein Gleichstand)?
-[ ] 3. Stimmt die 50-SMA des Paares mit der Richtung überein?
-[ ] 4. Ist gerade KEIN Trade offen?
-
-Alle 4 = JA  → Einstieg zum nächsten 4H-Open, Stop 1,5×ATR, Ziel +2R, Risiko 1 %.
-Ein NEIN     → kein neuer Trade. (Bei offenem Trade: nur Punkt 6 anwenden.)
-```
-
-Bei Gleichstand im Ranking (zwei Währungen exakt gleicher Wert): **kein Trade.**
-Kein Losentscheid, keine Interpretation.
-
----
-
-## 9. Die einzigen einstellbaren Schrauben (zum späteren Testen)
-
-Beim Backtest **zuerst mit genau diesen Defaults** testen. Erst danach EINE
-Schraube auf einmal variieren — niemals mehrere gleichzeitig (sonst weißt du
-nie, was gewirkt hat = Kurven-Anpassung).
-
-| Schraube            | Default | Alternativen zum Testen |
-|---------------------|---------|-------------------------|
-| Lookback            | 20 Tage | 10 / 40                 |
-| Stop-Multiplikator  | 1,5×ATR | 1,0× / 2,0×             |
-| Take-Profit         | +2R     | +3R / nur Rotations-Exit|
-| SMA-Filter-Länge    | 50      | 20 / 100 / kein Filter  |
-
-**Alles andere bleibt fix.** Nicht anfassen.
-
----
-
-## 10. Was diese Strategie NICHT ist
-
-- Kein Signal-Dienst. Niemand sagt dir "kauf jetzt". Du liest die Zahlen ab.
-- Keine Intraday-Strategie. Entscheidungen fallen 1× pro Woche.
-- Keine diskretionäre Strategie. Wenn du "ein gutes Gefühl" bei einem anderen
-  Paar hast — irrelevant. Es zählt nur die Rangliste.
-
-Erst wenn der Backtest (siehe `BACKTEST.md`) über einen langen Zeitraum eine
-stabile positive Erwartung zeigt, wird die Strategie mit echtem Geld gehandelt.
+Erst wenn der Backtest (`BACKTEST.md`) über einen langen Zeitraum eine stabile,
+positive Erwartung mit erträglichem Drawdown zeigt → Demo-Forward-Test → danach
+echtes Geld.

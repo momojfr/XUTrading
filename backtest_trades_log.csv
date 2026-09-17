@@ -1,1 +1,1 @@
-Trade#,Einstiegdatum,Paar,Richtung,Einstieg,ATR14_Daily,Stop,Ziel,SMA-Filter?,Ausstiegdatum,Ausstieggrund,Ergebnis_R,Notizen
+Trade#,Datum_Setup,Richtung,ATR14,Fib0,Fib1,Fib05,OB_High,OB_Low,Impuls_ok?,05_in_OB?,Fresh?,Entry,Stop,R_$,TP1_2R,Runner_Ziel,Runner_R,Runner_ok_3R?,Ausgang,Ergebnis_R,Notizen
